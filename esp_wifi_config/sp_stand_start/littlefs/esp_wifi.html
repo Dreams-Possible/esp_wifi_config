@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WiFi 配置</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: #f0f2f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .box {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      width: 320px;
+    }
+
+    .box h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #007BFF;
+    }
+
+    .input {
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .input input {
+      width: 90%;
+      padding: 10px 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      transition: border-color 0.2s;
+    }
+
+    .input input:focus {
+      border-color: #007BFF;
+      outline: none;
+    }
+
+    .input .hint {
+      margin-top: 4px;
+      font-size: 13px;
+      color: red;
+      display: none;
+    }
+
+    .btn {
+      display: block;
+      margin: 0 auto;
+      background: #007BFF;
+      color: white;
+      padding: 10px 20px;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: #0056b3;
+    }
+
+    #result {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 14px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>WiFi 配置</h2>
+
+    <div class="input">
+      <input type="text" id="ssid" placeholder="WiFi 名称">
+      <div class="hint" id="ssidHint">请输入 WiFi 名称</div>
+    </div>
+
+    <div class="input">
+      <input type="text" id="pass" placeholder="WiFi 密码">
+      <div class="hint" id="pwdHint">请输入 WiFi 密码</div>
+    </div>
+
+    <button class="btn" onclick="connectWiFi()">连接</button>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    function connectWiFi() {
+      const ssid = document.getElementById('ssid').value.trim();
+      const pass = document.getElementById('pass').value.trim();
+      const result = document.getElementById('result');
+      const ssidHint = document.getElementById('ssidHint');
+      const pwdHint = document.getElementById('pwdHint');
+
+      // 清除提示
+      ssidHint.style.display = 'none';
+      pwdHint.style.display = 'none';
+      result.textContent = '';
+
+      let hasError = false;
+      if (!ssid) {
+        ssidHint.style.display = 'block';
+        hasError = true;
+      }
+      if (!pass) {
+        pwdHint.style.display = 'block';
+        hasError = true;
+      }
+
+      if (hasError) return;
+
+      result.textContent = '正在连接，请稍候...';
+
+      fetch("/post", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ ssid, pass })
+      })
+      .then(res => res.text())
+      .then(text => {
+        result.textContent = text;
+      })
+      .catch(err => {
+        result.textContent = "连接失败：" + err.message;
+      });
+    }
+  </script>
+</body>
+</html>
