@@ -1,0 +1,2 @@
+# esp_wifi_config
+一个简易的通过ESP32的热点建立服务器并通过前端UI实现WiFi配网的例程。
